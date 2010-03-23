@@ -1,0 +1,18 @@
+use strict;
+use warnings;
+use inc::Module::Install;
+use 5.008005;
+
+name 'ASP4x-Router';
+perl_version '5.008001';
+license 'perl';
+all_from 'lib/ASP4x/Router.pm';
+
+test_requires 'Test::More'  => '0.77';
+
+requires 'ASP4'             => '1.024';
+requires 'Router::Generic'  => '0.003';
+
+tests_recursive();
+WriteAll();
+
