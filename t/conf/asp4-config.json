@@ -14,7 +14,7 @@
   },
   "errors": {
     "error_handler":    "ASP4::ErrorHandler",
-    "mail_errors_to":   "jdrago.999@gmail.com",
+    "mail_errors_to":   "you@your-server.com",
     "mail_errors_from": "root@localhost",
     "smtp_server":      "localhost"
   },

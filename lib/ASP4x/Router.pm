@@ -8,7 +8,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 
 sub handler : method
@@ -155,28 +155,68 @@ ASP4x::Router - URL Routing for your ASP4 web application.
   }
   ...
 
+=head2 In your ASP scripts and Handlers:
 
+  <%
+    # Get the router:
+    my $router = $Stash->{router};
+    
+    # Get the uri:
+    my $uri = $router->uri_for('EditPage', { type => 'truck', id => 123 });
+  %>
+  <a href="<%= $Server->HTMLEncode( $uri ) %>">Edit this Truck</a>
+
+Comes out like this:
+
+  <a href="/main/truck/123/edit/">Edit this Truck</a>
 
 =head1 DESCRIPTION
 
 For a gentle introduction to URL Routing in general, see L<Router::Generic>, since
 C<ASP4x::Router> uses L<Router::Generic> to handle all the routing logic.
 
-URL Routing is the best thing since sliced bread.  Routing has been approved by the FDA to:
+Long story short - URL Routing can help decouple the information architecture from
+the actual layout of files on disk.
 
-=over 4
+=head2 How does it work?
 
-=item * Slice!
+C<ASP4x::Router> uses L<Router::Generic> for the heavy lifting.  It functions as
+both a mod_perl C<PerlTransHandler> and as a L<ASP4::RequestFilter>, providing the
+same exact routing behavior for both L<ASP4::API> calls and for normal HTTP requests
+handled by the mod_perl interface of your web server.
 
-=item * Dice!
+When a request comes in to Apache, mod_perl will know that C<ASP4x::Router> might
+make a change to the URI - so it has C<ASP4x::Router> take a look at the request.  If
+any changes are made (eg - C</foo/bar/1/> gets changed to C</pages/baz.asp?id=1>)
+then the server handles the request just as though C</pages/baz.asp?id=1> had been
+requested in the first place.
 
-=item * Do your dishes!
+For testing - if you run this:
 
-=item * Kill mice!
+  $api->ua->get('/foo/bar/1/');
 
-=back
+C<ASP4x::Router> will "reroute" that request to C</pages/baz.asp?id=1> as though you
+had done it yourself like this:
 
-URL Routing is also a cure for the poorly-constructed URL.
+  $api->ua->get('/pages/baz.asp?id=1');
+
+=head2 What is the point?
+
+Aside from the "All the cool kids are doing it" argument - you get super SEO features
+and mad street cred - all in one shot.
+
+Now, instead of 1998-esque urls like C</page.asp?category=2&product=789&revPage=2> you get
+C</shop/marbles/big-ones/reviews/page/4/>
+
+=head2 What about performance?
+
+Unless you have literally B<*thousands*> of different entries in the "C<routing>"
+section of your C<conf/asp4-config.json> file, performance should be B<quite> fast.
+
+=head2 Where can I learn more?
+
+Please see the documentation for L<Router::Generic> to learn all about how to 
+specify routes.
 
 =head1 PREREQUISITES
 
