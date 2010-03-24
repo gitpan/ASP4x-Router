@@ -1,4 +1,7 @@
 
+2010-03-24      v0.003
+  - Added prereq Apache2::RequestRec since that's needed for ASP4::TransHandler.
+
 2010-03-23      v0.002
   - Changed the email address in the config.
   - Updated the POD with examples and more description.

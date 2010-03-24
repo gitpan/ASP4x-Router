@@ -22,4 +22,3 @@ t/htdocs/pages/create.asp
 t/htdocs/pages/edit.asp
 t/htdocs/pages/list.asp
 t/htdocs/pages/view.asp
-t/lib/Routes/Router.pm

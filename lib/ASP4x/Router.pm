@@ -8,7 +8,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 
 sub handler : method
