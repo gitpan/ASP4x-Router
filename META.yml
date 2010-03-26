@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               ASP4x-Router
-version:            0.003
+version:            0.004
 abstract:           URL Routing for your ASP4 web application.
 author:
     - John Drago <jdrago_999@yahoo.com>
@@ -12,6 +12,7 @@ requires:
     Carp:             0
     ASP4:             1.024
     Router::Generic:  0.003
+recommends:
     Apache2::RequestRec: 0
 no_index:
     directory:

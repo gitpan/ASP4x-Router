@@ -3,12 +3,17 @@ package ASP4x::Router;
 
 use strict;
 use warnings 'all';
-use base qw( ASP4::TransHandler ASP4::RequestFilter );
+use base 'ASP4::RequestFilter';
+BEGIN {
+  # Only conditionally inherit from ASP4::TransHandler':
+  eval { require ASP4::TransHandler; };
+  push @ASP4x::Router::ISA, 'ASP4::TransHandler' unless $@;
+}
 use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 
 sub handler : method
@@ -18,14 +23,24 @@ sub handler : method
   $ENV{DOCUMENT_ROOT} = $r->document_root;
   $class->SUPER::handler( $r );
   
-  # Setup our router according to the config:
-  my $router = Router::Generic->new();
-  my $Config = ASP4::ConfigLoader->load();
-  my $routes = eval { $Config->web->routes } or return -1;
-  eval { @$routes } or return -1;
-  map { $router->add_route( %$_ ) } @$routes;
+  my $router = $class->get_router();
+  my @matches = $router->match( $r->uri . ( $r->args ? '?' . $r->args : '' ), $r->method )
+    or return -1;
   
-  my $new_uri = $router->match( $r->uri . ( $r->args ? '?' . $r->args : '' ), $r->method )
+  # TODO: Check matches to see if maybe they point to another route not on disk:
+  my ($new_uri) = grep {
+    my ($path) = split /\?/, $_;
+    if( m{^/handlers/} )
+    {
+      $path =~ s/\./\//g;
+      $path .= ".pm";
+      -f $Config->web->application_root . $path;
+    }
+    else
+    {
+      -f $r->document_root . $path;
+    }# end if()
+  } @matches
     or return -1;
   
   # Require a trailing '/' on the end of the URI:
@@ -49,22 +64,61 @@ sub run
 {
   my ($s, $context) = @_;
   
-  my $router = Router::Generic->new();
-  my $routes = eval { $Config->web->routes } or return;
-  eval { @$routes } or return $Response->Declined;
-  map { $router->add_route( %$_ ) } @$routes;
+  my $router = $s->get_router();
   $Stash->{router} = $router;
 
   # Try routing:
-  if( my $uri = $router->match( $ENV{REQUEST_URI}, $ENV{REQUEST_METHOD} ) )
+  if( my @matches = $router->match( $ENV{REQUEST_URI}, $ENV{REQUEST_METHOD} ) )
   {
-    $Request->Reroute( $uri );
+    # TODO: Check matches to see if maybe they point to another route not on disk:
+    my ($new_uri) = grep {
+      my ($path) = split /\?/, $_;
+      if( $path =~ m{^/handlers/} )
+      {
+        $path =~ s/\./\//g;
+        $path .= ".pm";
+        -f $Config->web->application_root . $path;
+      }
+      else
+      {
+        -f $Server->MapPath($path);
+      }# end if()
+    } @matches or return $Response->Declined;
+    $Request->Reroute( $new_uri );
   }
   else
   {
     return $Response->Declined;
   }# end if()
 }# end run()
+
+
+sub get_router
+{
+  my ($s) = @_;
+
+  # Setup our router according to the config:
+  my $Config = ASP4::ConfigLoader->load();
+  
+  if( my $router = eval { $Config->web->router } )
+  {
+    return $router;
+  }# end if()
+  
+  my $router = Router::Generic->new();
+  my $routes = eval { $Config->web->routes } or return -1;
+  eval { @$routes } or return -1;
+  map { $router->add_route( %$_ ) } @$routes;
+  
+  no strict 'refs';
+  no warnings 'redefine';
+  *ASP4::ConfigNode::Web::router = sub {
+    my $s = shift;
+    $s->{router};
+  };
+  $Config->{web}->{router} = $router;
+}# end get_router()
+
 
 1;# return true:
 
@@ -159,7 +213,7 @@ ASP4x::Router - URL Routing for your ASP4 web application.
 
   <%
     # Get the router:
-    my $router = $Stash->{router};
+    my $router = $Config->web->router;
     
     # Get the uri:
     my $uri = $router->uri_for('EditPage', { type => 'truck', id => 123 });

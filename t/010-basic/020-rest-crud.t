@@ -57,3 +57,13 @@ is( $res->content => "Edit truck id 1", "POST '/main/truck/1/edit/' correct");
 $res = $api->ua->post("/main/truck/1/delete/");
 is( $res->content => "Delete truck id 1", "POST '/main/truck/1/delete/' correct");
 
+
+is(
+  '/main/truck/create/' =>
+  $api->context->config->web->router->uri_for('CreatePage', { type => 'truck' }),
+  "Got router and uri_for(...) just fine."
+);
+
+
+
+

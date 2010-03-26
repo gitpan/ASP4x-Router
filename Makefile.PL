@@ -11,8 +11,8 @@ all_from 'lib/ASP4x/Router.pm';
 test_requires 'Test::More'  => '0.77';
 
 requires 'ASP4'             => '1.024';
-requires 'Router::Generic'  => '0.003';
-requires 'Apache2::RequestRec';
+requires 'Router::Generic'  => '0.007';
+recommends 'Apache2::RequestRec';
 
 tests_recursive();
 WriteAll();
