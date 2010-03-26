@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 
 sub handler : method
@@ -55,6 +55,7 @@ sub handler : method
   my ($uri, $args) = split /\?/, $new_uri;
   $r->args( split /&/, $args );
   $r->uri( $uri );
+  $r->pnotes( __routed => 1 );
   
   return -1;
 }# end handler()
@@ -64,6 +65,7 @@ sub run
 {
   my ($s, $context) = @_;
   
+  return $Response->Declined if $context->r->pnotes('__routed');
   my $router = $s->get_router();
   $Stash->{router} = $router;
 

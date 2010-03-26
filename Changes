@@ -1,4 +1,9 @@
 
+2010-03-26      v0.005
+  - The mod_perl handler sets $r->pnotes(__routed => 1), which the ASP4::TransHandler
+    now checks before performing any additional routing.  Otherwise we end up
+    doing twice the work!
+
 2010-03-26      v0.004
   - The logic used for finding/constructing the router is updated.
   - Updated POD.
