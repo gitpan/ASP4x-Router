@@ -1,4 +1,8 @@
 
+
+2010-03-27      v0.006
+  - The TransHandler handler was not passing along $r->args properly.
+
 2010-03-26      v0.005
   - The mod_perl handler sets $r->pnotes(__routed => 1), which the ASP4::TransHandler
     now checks before performing any additional routing.  Otherwise we end up

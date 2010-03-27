@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 
 sub handler : method
@@ -28,6 +28,7 @@ sub handler : method
     or return -1;
   
   # TODO: Check matches to see if maybe they point to another route not on disk:
+  my $Config = ASP4::ConfigLoader->load;
   my ($new_uri) = grep {
     my ($path) = split /\?/, $_;
     if( m{^/handlers/} )
@@ -53,7 +54,9 @@ sub handler : method
   }# end unless()
   
   my ($uri, $args) = split /\?/, $new_uri;
-  $r->args( split /&/, $args );
+  my @args = split /&/, $r->args;
+  push @args, split /&/, $args if defined($args) && length($args);
+  $r->args( join '&', @args );
   $r->uri( $uri );
   $r->pnotes( __routed => 1 );
   
