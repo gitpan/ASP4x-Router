@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.006';
+our $VERSION = '0.007';
 
 
 sub handler : method
@@ -21,9 +21,10 @@ sub handler : method
   my ($class, $r) = @_;
   
   $ENV{DOCUMENT_ROOT} = $r->document_root;
-  $class->SUPER::handler( $r );
+  my $res = $class->SUPER::handler( $r );
   
-  my $router = $class->get_router();
+  my $router = $class->get_router()
+    or return $res;
   my @matches = $router->match( $r->uri . ( $r->args ? '?' . $r->args : '' ), $r->method )
     or return -1;
   
@@ -69,8 +70,8 @@ sub run
   my ($s, $context) = @_;
   
   return $Response->Declined if $context->r->pnotes('__routed');
-  my $router = $s->get_router();
-  $Stash->{router} = $router;
+  my $router = $s->get_router()
+    or return $Response->Declined;
 
   # Try routing:
   if( my @matches = $router->match( $ENV{REQUEST_URI}, $ENV{REQUEST_METHOD} ) )

@@ -1,4 +1,6 @@
 
+2010-03-29      v0.007
+  - If we can't get a router object, ASP4x::Router will return "declined".
 
 2010-03-27      v0.006
   - The TransHandler handler was not passing along $r->args properly.

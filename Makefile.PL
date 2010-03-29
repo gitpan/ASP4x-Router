@@ -8,7 +8,7 @@ perl_version '5.008001';
 license 'perl';
 all_from 'lib/ASP4x/Router.pm';
 
-test_requires 'Test::More'  => '0.77';
+test_requires 'Test::More'  => '0';
 
 requires 'ASP4'             => '1.024';
 requires 'Router::Generic'  => '0.007';
