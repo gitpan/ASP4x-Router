@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 
 sub handler : method
@@ -55,8 +55,7 @@ sub handler : method
   }# end unless()
   
   my ($uri, $args) = split /\?/, $new_uri;
-  my @args = split /&/, $r->args;
-  push @args, split /&/, $args if defined($args) && length($args);
+  my @args = split /&/, $args if defined($args) && length($args);
   $r->args( join '&', @args );
   $r->uri( $uri );
   $r->pnotes( __routed => 1 );
@@ -138,10 +137,6 @@ ASP4x::Router - URL Routing for your ASP4 web application.
 
 =head2 httpd.conf
 
-  <Perl>
-    push @INC, '/path/to/yoursite.com/lib';
-  </Perl>
-  
   PerlModule ASP4x::Router
   
   ...

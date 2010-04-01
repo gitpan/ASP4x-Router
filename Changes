@@ -1,4 +1,7 @@
 
+2010-04-01      v0.008
+  - Miscellaneous bug fixes and minor enhancements all-around.
+
 2010-03-29      v0.007
   - If we can't get a router object, ASP4x::Router will return "declined".
 
