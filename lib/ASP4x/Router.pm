@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.008';
+our $VERSION = '0.009';
 
 
 sub handler : method
@@ -107,7 +107,7 @@ sub get_router
   
   if( my $router = eval { $Config->web->router } )
   {
-    return $router;
+    return $router if UNIVERSAL::can($router, 'match');
   }# end if()
   
   my $router = Router::Generic->new();
@@ -117,10 +117,7 @@ sub get_router
   
   no strict 'refs';
   no warnings 'redefine';
-  *ASP4::ConfigNode::Web::router = sub {
-    my $s = shift;
-    $s->{router};
-  };
+  *ASP4::ConfigNode::Web::router = sub { shift->{router} };
   $Config->{web}->{router} = $router;
 }# end get_router()
 
