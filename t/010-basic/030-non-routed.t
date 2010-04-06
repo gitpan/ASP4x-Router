@@ -29,3 +29,8 @@ ok(
 is( $res->content => "ANOTHER NOT ROUTED
 ", "/no-routing/another.asp was not routed" );
 
+
+# Create handler:
+$res = $api->ua->post("/main/boat/create/");
+is( $res->content => "Non-Routed Boat Create Handler", "POST '/main/boat/create/' correct");
+

@@ -49,7 +49,7 @@
       {
         "name":   "Create",
         "path":   "/main/:type/create",
-        "target": "/handlers/dev.create",
+        "target": [ "/handlers/dev.[:type:].create", "/handlers/dev.create" ],
         "method": "POST"
       },
       {

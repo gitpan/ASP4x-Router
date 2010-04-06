@@ -6,14 +6,14 @@ use warnings 'all';
 use base 'ASP4::RequestFilter';
 BEGIN {
   # Only conditionally inherit from ASP4::TransHandler':
-  eval { require ASP4::TransHandler; };
+  eval { require ASP4::TransHandler };
   push @ASP4x::Router::ISA, 'ASP4::TransHandler' unless $@;
 }
 use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.011';
+our $VERSION = '0.012';
 
 
 sub handler : method
@@ -22,31 +22,43 @@ sub handler : method
   
   $ENV{DOCUMENT_ROOT} = $r->document_root;
   my $res = $class->SUPER::handler( $r );
+  my $Config = ASP4::ConfigLoader->load;
   
-  my $path = $r->document_root . $r->uri;
-  if( $path =~ m{/$} && -f $path . 'index.asp' )
+  my $fullpath = $r->document_root . $r->uri;
+  if( $fullpath =~ m{/$} && -f $fullpath . 'index.asp' )
   {
     $r->uri( $r->uri . 'index.asp' );
     return -1;
   }
-  elsif( -f $path )
+  elsif( -f $fullpath )
   {
     return -1;
+  }
+  elsif( $r->uri =~ m{^/handlers/} )
+  {
+    (my $handler_path = $r->uri) =~ s{\.}{/}g;
+    $handler_path = $Config->web->application_root . "$handler_path.pm";
+    if( -f $handler_path )
+    {
+      return -1;
+    }# end if()
   }# end if()
-  
+
   my $router = $class->get_router()
     or return $res;
   my @matches = $router->match( $r->uri . ( $r->args ? '?' . $r->args : '' ), $r->method )
     or return -1;
   
   # TODO: Check matches to see if maybe they point to another route not on disk:
-  my $Config = ASP4::ConfigLoader->load;
   my ($new_uri) = grep {
     my ($path) = split /\?/, $_;
     if( m{^/handlers/} )
     {
       $path =~ s/\./\//g;
       $path .= ".pm";
+      if( -f $Config->web->application_root . $path )
+      {
+      }# end if()
       -f $Config->web->application_root . $path;
     }
     else
@@ -83,11 +95,21 @@ sub run
   my $path = $r->document_root . $r->uri;
   if( $path =~ m{/$} && -f $path . 'index.asp' )
   {
-    return -1;
+    return $Response->Declined;
   }
   elsif( -f $path )
   {
-    return -1;
+    return $Response->Declined;
+  }
+  elsif( $r->uri =~ m{^/handlers/} )
+  {
+    # Check to see if there is a handler on-disk that matches the uri:
+    (my $handler_path = $r->uri) =~ s{\.}{/}g;
+    $handler_path = $Config->web->application_root . "$handler_path.pm";
+    if( -f $handler_path )
+    {
+      return $Response->Declined;
+    }# end if()
   }# end if()
   
   return $Response->Declined if $context->r->pnotes('__routed');
@@ -122,8 +144,6 @@ sub run
 
 sub get_router
 {
-  my ($s) = @_;
-
   ASP4::ConfigLoader->load()->web->router;
 }# end get_router()
 

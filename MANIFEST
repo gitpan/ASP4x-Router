@@ -16,6 +16,7 @@ t/010-basic/020-rest-crud.t
 t/010-basic/030-non-routed.t
 t/conf/asp4-config.json
 t/conf/httpd.conf
+t/handlers/dev/boat/create.pm
 t/handlers/dev/create.pm
 t/handlers/dev/delete.pm
 t/handlers/dev/edit.pm

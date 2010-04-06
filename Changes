@@ -1,4 +1,9 @@
 
+2010-04-06      v0.012
+  - Handlers are now also covered by the "don't-route-if-the-file-actually-exists"
+    logic from v0.010-v0.011.
+  - Added tests to verify the new behavior.
+
 2010-04-06      v0.011
   - Finished the whole "don't-route-if-the-file-actually-exists" thing that was
     started in v0.010
