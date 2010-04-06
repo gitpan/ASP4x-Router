@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.010';
+our $VERSION = '0.011';
 
 
 sub handler : method
@@ -23,7 +23,16 @@ sub handler : method
   $ENV{DOCUMENT_ROOT} = $r->document_root;
   my $res = $class->SUPER::handler( $r );
   
-  return $res if -f $r->document_root . $r->uri || -d $r->document_root . $r->uri;
+  my $path = $r->document_root . $r->uri;
+  if( $path =~ m{/$} && -f $path . 'index.asp' )
+  {
+    $r->uri( $r->uri . 'index.asp' );
+    return -1;
+  }
+  elsif( -f $path )
+  {
+    return -1;
+  }# end if()
   
   my $router = $class->get_router()
     or return $res;
@@ -70,7 +79,17 @@ sub run
 {
   my ($s, $context) = @_;
   
-  return $Response->Declined if -f $Server->MapPath( $context->r->uri ) || -d $Server->MapPath( $context->r->uri );
+  my $r = $context->r;
+  my $path = $r->document_root . $r->uri;
+  if( $path =~ m{/$} && -f $path . 'index.asp' )
+  {
+    return -1;
+  }
+  elsif( -f $path )
+  {
+    return -1;
+  }# end if()
+  
   return $Response->Declined if $context->r->pnotes('__routed');
   my $router = $s->get_router()
     or return $Response->Declined;
@@ -105,23 +124,7 @@ sub get_router
 {
   my ($s) = @_;
 
-  # Setup our router according to the config:
-  my $Config = ASP4::ConfigLoader->load();
-  
-  if( my $router = eval { $Config->web->router } )
-  {
-    return $router if UNIVERSAL::can($router, 'match');
-  }# end if()
-  
-  my $router = Router::Generic->new();
-  my $routes = eval { $Config->web->routes } or return -1;
-  eval { @$routes } or return -1;
-  map { $router->add_route( %$_ ) } @$routes;
-  
-  no strict 'refs';
-  no warnings 'redefine';
-  *ASP4::ConfigNode::Web::router = sub { shift->{router} };
-  $Config->{web}->{router} = $router;
+  ASP4::ConfigLoader->load()->web->router;
 }# end get_router()
 
 

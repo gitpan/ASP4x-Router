@@ -19,6 +19,7 @@ t/conf/httpd.conf
 t/handlers/dev/create.pm
 t/handlers/dev/delete.pm
 t/handlers/dev/edit.pm
+t/htdocs/no-routing/another.asp
 t/htdocs/no-routing/index.asp
 t/htdocs/pages/create.asp
 t/htdocs/pages/edit.asp

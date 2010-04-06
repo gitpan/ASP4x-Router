@@ -1,4 +1,10 @@
 
+2010-04-06      v0.011
+  - Finished the whole "don't-route-if-the-file-actually-exists" thing that was
+    started in v0.010
+  - Requires ASP4 v1.025 because of a change in the way that $Config->web->router
+    is setup (now it actually happens inside of ASP4::ConfigNode::Web.
+
 2010-04-05      v0.010
   - If /foo/bar.asp is a real file on disk then route-matching will be skipped.
 
