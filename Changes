@@ -1,4 +1,7 @@
 
+2010-04-05      v0.010
+  - If /foo/bar.asp is a real file on disk then route-matching will be skipped.
+
 2010-04-05      v0.009
   - Sometimes get_router() was returning strange values - added a workaround to
     prevent this.

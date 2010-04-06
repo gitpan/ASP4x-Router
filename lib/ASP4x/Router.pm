@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.009';
+our $VERSION = '0.010';
 
 
 sub handler : method
@@ -22,6 +22,8 @@ sub handler : method
   
   $ENV{DOCUMENT_ROOT} = $r->document_root;
   my $res = $class->SUPER::handler( $r );
+  
+  return $res if -f $r->document_root . $r->uri || -d $r->document_root . $r->uri;
   
   my $router = $class->get_router()
     or return $res;
@@ -68,6 +70,7 @@ sub run
 {
   my ($s, $context) = @_;
   
+  return $Response->Declined if -f $Server->MapPath( $context->r->uri ) || -d $Server->MapPath( $context->r->uri );
   return $Response->Declined if $context->r->pnotes('__routed');
   my $router = $s->get_router()
     or return $Response->Declined;
