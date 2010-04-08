@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.012';
+our $VERSION = '0.013';
 
 
 sub handler : method
@@ -23,6 +23,9 @@ sub handler : method
   $ENV{DOCUMENT_ROOT} = $r->document_root;
   my $res = $class->SUPER::handler( $r );
   my $Config = ASP4::ConfigLoader->load;
+  
+  my $router = $class->get_router();
+  $r->pnotes( route => $router->route_for( $r->uri, $r->method ) );
   
   my $fullpath = $r->document_root . $r->uri;
   if( $fullpath =~ m{/$} && -f $fullpath . 'index.asp' )
@@ -43,9 +46,9 @@ sub handler : method
       return -1;
     }# end if()
   }# end if()
-
-  my $router = $class->get_router()
-    or return $res;
+  
+  return $res unless $router;
+  
   my @matches = $router->match( $r->uri . ( $r->args ? '?' . $r->args : '' ), $r->method )
     or return -1;
   
@@ -76,7 +79,7 @@ sub handler : method
     $r->err_headers_out->add( Location => $loc );
     return 301;
   }# end unless()
-  
+
   my ($uri, $args) = split /\?/, $new_uri;
   my @args = split /&/, $args if defined($args) && length($args);
   $r->args( join '&', @args );
@@ -90,6 +93,12 @@ sub handler : method
 sub run
 {
   my ($s, $context) = @_;
+  
+  if( my $route = $context->r->pnotes('route') )
+  {
+    $Stash->{route} = $route;
+  }# end if()
+  return $Response->Declined if $context->r->pnotes('__routed');
   
   my $r = $context->r;
   my $path = $r->document_root . $r->uri;
@@ -112,7 +121,6 @@ sub run
     }# end if()
   }# end if()
   
-  return $Response->Declined if $context->r->pnotes('__routed');
   my $router = $s->get_router()
     or return $Response->Declined;
 
@@ -133,6 +141,8 @@ sub run
         -f $Server->MapPath($path);
       }# end if()
     } @matches or return $Response->Declined;
+    
+    $Stash->{route} = $router->route_for( $ENV{REQUEST_URI}, $ENV{REQUEST_METHOD} );
     $Request->Reroute( $new_uri );
   }
   else

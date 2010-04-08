@@ -1,4 +1,7 @@
 
+2010-04-08      v0.013
+  - $r->pnotes(route) is set even if we don't do routing.  This makes routing more consistent.
+
 2010-04-06      v0.012
   - Handlers are now also covered by the "don't-route-if-the-file-actually-exists"
     logic from v0.010-v0.011.
