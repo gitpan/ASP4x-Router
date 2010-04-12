@@ -1,4 +1,7 @@
 
+2010-04-10      v0.014
+  - Fixed a bug that caused $Stash->{route} to not always be accessible.
+
 2010-04-08      v0.013
   - $r->pnotes(route) is set even if we don't do routing.  This makes routing more consistent.
 

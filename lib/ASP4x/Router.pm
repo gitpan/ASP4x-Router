@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 
 sub handler : method
@@ -24,8 +24,14 @@ sub handler : method
   my $res = $class->SUPER::handler( $r );
   my $Config = ASP4::ConfigLoader->load;
   
+  if( my $app = eval { $Config->app } )
+  {
+    map { $Config->load_class( $_ ) } @$app;
+  }# end if()
+  
   my $router = $class->get_router();
   $r->pnotes( route => $router->route_for( $r->uri, $r->method ) );
+  $r->pnotes( __routed => 1 );
   
   my $fullpath = $r->document_root . $r->uri;
   if( $fullpath =~ m{/$} && -f $fullpath . 'index.asp' )
@@ -84,7 +90,6 @@ sub handler : method
   my @args = split /&/, $args if defined($args) && length($args);
   $r->args( join '&', @args );
   $r->uri( $uri );
-  $r->pnotes( __routed => 1 );
   
   return -1;
 }# end handler()
@@ -99,6 +104,18 @@ sub run
     $Stash->{route} = $route;
   }# end if()
   return $Response->Declined if $context->r->pnotes('__routed');
+  
+  if( my $app = eval { $Config->app } )
+  {
+    map { $Config->load_class( $_ ) } @$app;
+  }# end if()
+  
+  my $router = $s->get_router()
+    or return $Response->Declined;
+  
+  my ($uri) = split /\?/, $ENV{REQUEST_URI};
+  my $route = $router->route_for( $uri, $ENV{REQUEST_METHOD} );
+  $Stash->{route} = $route;
   
   my $r = $context->r;
   my $path = $r->document_root . $r->uri;
@@ -120,9 +137,6 @@ sub run
       return $Response->Declined;
     }# end if()
   }# end if()
-  
-  my $router = $s->get_router()
-    or return $Response->Declined;
 
   # Try routing:
   if( my @matches = $router->match( $ENV{REQUEST_URI}, $ENV{REQUEST_METHOD} ) )
