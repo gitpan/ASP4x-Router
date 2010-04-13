@@ -1,4 +1,7 @@
 
+2010-04-13      v0.015
+  - Properly sets $ENV{QUERY_STRING} when running in a mod_perl2 environment.
+
 2010-04-10      v0.014
   - Fixed a bug that caused $Stash->{route} to not always be accessible.
 

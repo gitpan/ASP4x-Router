@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.014';
+our $VERSION = '0.015';
 
 
 sub handler : method
@@ -89,6 +89,7 @@ sub handler : method
   my ($uri, $args) = split /\?/, $new_uri;
   my @args = split /&/, $args if defined($args) && length($args);
   $r->args( join '&', @args );
+  $ENV{QUERY_STRING} = $r->args;
   $r->uri( $uri );
   
   return -1;
