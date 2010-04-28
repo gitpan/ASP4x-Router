@@ -1,4 +1,7 @@
 
+2010-04-27      v0.016
+  - Now $ENV{REMOTE_ADDR} is set properly.
+
 2010-04-13      v0.015
   - Properly sets $ENV{QUERY_STRING} when running in a mod_perl2 environment.
 

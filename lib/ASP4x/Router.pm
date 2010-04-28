@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.015';
+our $VERSION = '0.016';
 
 
 sub handler : method
@@ -21,6 +21,7 @@ sub handler : method
   my ($class, $r) = @_;
   
   $ENV{DOCUMENT_ROOT} = $r->document_root;
+  $ENV{REMOTE_ADDR} = $r->connection->get_remote_host();
   my $res = $class->SUPER::handler( $r );
   my $Config = ASP4::ConfigLoader->load;
   
