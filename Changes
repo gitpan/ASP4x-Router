@@ -1,4 +1,12 @@
 
+2010-05-20      v0.018
+  - This release addresses several issues related to running multiple applications
+    under different VirtualHosts on the same apache server.
+
+2010-05-19      v0.017
+  - Some versions of Apache httpd don't always set $r->hostname, which causes
+    problems for us.  Declining those requests appears to be acceptable...let's see.
+
 2010-04-27      v0.016
   - Now $ENV{REMOTE_ADDR} is set properly.
 

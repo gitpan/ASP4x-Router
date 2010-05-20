@@ -13,21 +13,26 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.016';
+our $VERSION = '0.018';
+
+our %routers = ( );
 
 
 sub handler : method
 {
   my ($class, $r) = @_;
   
-  $ENV{DOCUMENT_ROOT} = $r->document_root;
-  $ENV{REMOTE_ADDR} = $r->connection->get_remote_host();
+  return -1 if $r->pnotes('__routed');
+  
   my $res = $class->SUPER::handler( $r );
   my $Config = ASP4::ConfigLoader->load;
   
   if( my $app = eval { $Config->app } )
   {
-    map { $Config->load_class( $_ ) } @$app;
+    map {
+      $Config->load_class( $_ );
+      $_->import;
+    } @$app;
   }# end if()
   
   my $router = $class->get_router();
@@ -68,8 +73,8 @@ sub handler : method
       $path .= ".pm";
       if( -f $Config->web->application_root . $path )
       {
+        1;
       }# end if()
-      -f $Config->web->application_root . $path;
     }
     else
     {
