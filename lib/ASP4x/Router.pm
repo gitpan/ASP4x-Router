@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.018';
+our $VERSION = '0.019';
 
 our %routers = ( );
 
@@ -114,7 +114,10 @@ sub run
   
   if( my $app = eval { $Config->app } )
   {
-    map { $Config->load_class( $_ ) } @$app;
+    map {
+      $Config->load_class( $_ ); 
+      $_->import
+    } @$app;
   }# end if()
   
   my $router = $s->get_router()

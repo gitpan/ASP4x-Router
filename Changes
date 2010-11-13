@@ -1,4 +1,7 @@
 
+2010-11-12      v0.019
+  - All classes in config.app are now ->import'ed under non-mod_perl2 environment.
+
 2010-05-20      v0.018
   - This release addresses several issues related to running multiple applications
     under different VirtualHosts on the same apache server.
