@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.019';
+our $VERSION = '0.020';
 
 our %routers = ( );
 
@@ -23,6 +23,7 @@ sub handler : method
   my ($class, $r) = @_;
   
   return -1 if $r->pnotes('__routed');
+  $r->pnotes( __routed => 1 );
   
   my $res = $class->SUPER::handler( $r );
   my $Config = ASP4::ConfigLoader->load;
@@ -37,7 +38,6 @@ sub handler : method
   
   my $router = $class->get_router();
   $r->pnotes( route => $router->route_for( $r->uri, $r->method ) );
-  $r->pnotes( __routed => 1 );
   
   my $fullpath = $r->document_root . $r->uri;
   if( $fullpath =~ m{/$} && -f $fullpath . 'index.asp' )
@@ -78,15 +78,19 @@ sub handler : method
     }
     else
     {
-      -f $r->document_root . $path;
+      -f ($r->document_root . $path);
     }# end if()
   } @matches
     or return -1;
   
   # Require a trailing '/' on the end of the URI:
-  unless( $r->uri =~ m{/$} )
+  unless( $r->uri =~ m{\.[^/]+$} || $r->uri =~ m{/$} )
   {
     my $loc = $r->uri . '/';
+    if( $r->args )
+    {
+      $loc .= "?" . $r->args;
+    }# end if()
     $r->status( 301 );
     $r->err_headers_out->add( Location => $loc );
     return 301;

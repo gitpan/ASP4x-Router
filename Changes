@@ -1,4 +1,8 @@
 
+2011-01-11      v0.020
+  - There was a bug causing routes like "/{state_href:[^\\.]+}.asp" to work in a
+    RequestFilter context but break under Apache.
+
 2010-11-12      v0.019
   - All classes in config.app are now ->import'ed under non-mod_perl2 environment.
 
