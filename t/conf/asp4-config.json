@@ -41,6 +41,9 @@
     ],
     "routes": [
       {
+        "include_routes": "@ServerRoot@/conf/routes.json"
+      },
+      {
         "name":   "CreatePage",
         "path":   "/main/:type/create",
         "target": "/pages/create.asp",

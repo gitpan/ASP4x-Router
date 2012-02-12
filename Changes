@@ -1,4 +1,7 @@
 
+2012-02-12      v0.021
+  - Added support for multiple external "routes.json" files.
+
 2011-01-11      v0.020
   - There was a bug causing routes like "/{state_href:[^\\.]+}.asp" to work in a
     RequestFilter context but break under Apache.

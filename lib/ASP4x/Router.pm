@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.020';
+our $VERSION = '0.021';
 
 our %routers = ( );
 
@@ -196,7 +196,7 @@ ASP4x::Router - URL Routing for your ASP4 web application.
 
 =head1 SYNOPSIS
 
-=head2 httpd.conf
+% httpd.conf
 
   PerlModule ASP4x::Router
   
@@ -208,7 +208,7 @@ ASP4x::Router - URL Routing for your ASP4 web application.
   ...
   </VirtualHost>
 
-=head2 asp4-config.json
+% asp4-config.json
 
   ...
   "web": {
@@ -223,6 +223,9 @@ ASP4x::Router - URL Routing for your ASP4 web application.
     ]
     ...
     "routes": [
+      {
+        "include_routes":   "@ServerRoot@/conf/routes.json"
+      },
       {
         "name":   "CreatePage",
         "path":   "/main/:type/create",
@@ -271,7 +274,7 @@ ASP4x::Router - URL Routing for your ASP4 web application.
   }
   ...
 
-=head2 In your ASP scripts and Handlers:
+% In your ASP scripts and Handlers:
 
   <%
     # Get the router:

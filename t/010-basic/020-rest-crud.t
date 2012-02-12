@@ -65,5 +65,10 @@ is(
 );
 
 
+EXTERNAL_ROUTES: {
+  ok( my $res = $api->ua->get('/foo/foo/'), "GET /foo/foo/" );
+  ok( $res->is_success, "/foo/foo/ was successful" );
+  like $res->content => qr(You have reached foo.asp), "content looks right";
+};
 
 
