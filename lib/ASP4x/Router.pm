@@ -13,7 +13,7 @@ use Router::Generic;
 use ASP4::ConfigLoader;
 use vars __PACKAGE__->VARS;
 
-our $VERSION = '0.021';
+our $VERSION = '0.022';
 
 our %routers = ( );
 
@@ -193,6 +193,10 @@ sub get_router
 =head1 NAME
 
 ASP4x::Router - URL Routing for your ASP4 web application.
+
+=head1 DEPRECATED
+
+L<ASP4> has been deprecated and by extension this module as well.
 
 =head1 SYNOPSIS
 

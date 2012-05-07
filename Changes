@@ -1,4 +1,8 @@
 
+2012-05-07      v0.022
+  - DEPRECATED
+  - ASP4 was marked deprecated, so this module is also deprecated now.
+
 2012-02-12      v0.021
   - Added support for multiple external "routes.json" files.
 
